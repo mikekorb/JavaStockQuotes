@@ -1,0 +1,37 @@
+name         Company or Mutual Fund Name
+
+price		 Price  
+	first		 First Price
+	last         Last Price
+	low          Lowest trade today
+	high         Highest trade today
+	
+currency	(three letter code, see ISO 4217) 
+	
+date         Last Trade Date  
+time         Last Trade Time
+volume       Volume
+
+net          Net Change
+p_change     Percent Change from previous day's close
+avg_vol      Average Daily Vol
+bid          Bid
+ask          Ask
+close        Previous Close
+day_range    Day's Range
+year_range   52-Week Range
+eps          Earnings per Share
+pe           P/E Ratio
+div_date     Dividend Pay Date
+div          Dividend per Share
+div_yield    Dividend Yield
+cap          Market Capitalization
+ex_div       Ex-Dividend Date.
+nav          Net Asset Value
+yield        Yield (usually 30 day avg)
+exchange     The exchange the information was obtained from.
+success      Did the stock successfully return information? (true/false)
+errormsg     If success is false, this field may contain the reason why.
+method       The module (as could be passed to fetch) which found this
+             information.
+type         The type of equity returned
