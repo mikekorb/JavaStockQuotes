@@ -14,8 +14,8 @@ import java.util.Map;
 
 import jsq.config.Config;
 import jsq.datastructes.datacontainer;
-import jsq.tools.HtmlUnitTableTools;
-import jsq.tools.NumberTools;
+import jsq.tools.HtmlUnitTools;
+import jsq.tools.VarTools;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -64,12 +64,12 @@ public class Yahoo extends BaseFetcher  {
 		try {
 			HtmlPage page = webClient.getPage("https://de.finance.yahoo.com/q?s=" +  URLEncoder.encode(search, "UTF-8") + "&ql=1");
 
-			HtmlTable datatable = HtmlUnitTableTools.getTableByPartContent(page, "Ticker");
+			HtmlTable datatable = HtmlUnitTools.getTableByPartContent(page, "Ticker");
 			if (datatable == null) {
 				throw new IllegalStateException("Table 'Hist. Ereignisse' not found!");
 			}
 
-			List<? extends Map<String, String>> liste = HtmlUnitTableTools.analyse(datatable);
+			List<? extends Map<String, String>> liste = HtmlUnitTools.analyse(datatable);
 
 			List<Config> configs = new ArrayList<Config>();
 			Config config = new Config("Handelsplatz");
@@ -115,10 +115,10 @@ public class Yahoo extends BaseFetcher  {
 			datacontainer dc = new datacontainer();
 			try {
 				dc.data.put("date", df.parse(record.get("Date")));
-				dc.data.put("first", NumberTools.stringToBigDecimal(record.get("Open")));
-				dc.data.put("last", NumberTools.stringToBigDecimal(record.get("Close")));
-				dc.data.put("low", NumberTools.stringToBigDecimal(record.get("Low")));
-				dc.data.put("high", NumberTools.stringToBigDecimal(record.get("High")));
+				dc.data.put("first", VarTools.stringToBigDecimal(record.get("Open")));
+				dc.data.put("last", VarTools.stringToBigDecimal(record.get("Close")));
+				dc.data.put("low", VarTools.stringToBigDecimal(record.get("Low")));
+				dc.data.put("high", VarTools.stringToBigDecimal(record.get("High")));
 				dc.data.put("currency", defaultcur);
 				resultQuotes.add(dc);
 			} catch (ParseException e) {

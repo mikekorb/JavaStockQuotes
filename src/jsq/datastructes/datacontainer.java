@@ -6,6 +6,10 @@ public class datacontainer {
 
 	public HashMap<String, Object> data = new HashMap<String, Object>();
 	
+	public void put(String key, Object value) {
+		data.put(key, value);
+	}
+	
 	public String toString() {
 		return data.entrySet().toString();
 	}

@@ -58,6 +58,10 @@ public abstract class BaseFetcher {
 		return resultQuotes;
 	}
 
+	public void setResult(List<datacontainer> res) {
+		resultQuotes = res;
+	}
+
 	public String toString() {
 		return getName();
 	}

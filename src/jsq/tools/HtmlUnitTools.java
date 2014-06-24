@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 
-public class HtmlUnitTableTools {
+public class HtmlUnitTools {
 
 	/**
 	 * Searches a Table that TextContent starts with startstring
@@ -55,6 +56,13 @@ public class HtmlUnitTableTools {
 		return liste;
 	}
 
+	public static HtmlElement getFirstElementByXpath(HtmlPage page, String xpath) {
+		List x = page.getByXPath(xpath);
+		if (x.size() == 0) {
+			return null;
+		}
+		return (HtmlElement) x.get(0);
+	}
 
 	
 }
