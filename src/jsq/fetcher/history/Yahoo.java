@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jsq.config.Config;
-import jsq.datastructes.datacontainer;
+import jsq.datastructes.Datacontainer;
 import jsq.tools.HtmlUnitTools;
 import jsq.tools.VarTools;
 
@@ -53,9 +53,10 @@ public class Yahoo extends BaseFetcher  {
 	 * 
 	 * @param wkn
 	 * @return
+	 * @throws Exception 
 	 */
 	@Override
-	public void prepare(String search, int beginYear, int beginMon, int beginDay, int stopYear, int stopMon, int stopDay) {
+	public void prepare(String search, int beginYear, int beginMon, int beginDay, int stopYear, int stopMon, int stopDay) throws Exception {
 		super.prepare(search, beginYear, beginMon, beginDay, stopYear, stopMon, stopDay);
 		webClient = new WebClient();
 		webClient.setCssErrorHandler(new SilentCssErrorHandler());
@@ -110,9 +111,9 @@ public class Yahoo extends BaseFetcher  {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
 		CSVFormat format = CSVFormat.RFC4180.withHeader().withDelimiter(',').withIgnoreEmptyLines(true);
 		CSVParser parser = new CSVParser(new StringReader(s), format);
-		resultQuotes = new ArrayList<datacontainer>();
+		ArrayList<Datacontainer> resultQuotes = new ArrayList<Datacontainer>();
 		for(CSVRecord record : parser){
-			datacontainer dc = new datacontainer();
+			Datacontainer dc = new Datacontainer();
 			try {
 				dc.data.put("date", df.parse(record.get("Date")));
 				dc.data.put("first", VarTools.stringToBigDecimal(record.get("Open")));
@@ -125,6 +126,7 @@ public class Yahoo extends BaseFetcher  {
 				e.printStackTrace();
 			}
 		}
+		setHistQuotes(resultQuotes);
 		parser.close();
 	}
 

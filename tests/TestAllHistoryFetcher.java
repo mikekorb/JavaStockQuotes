@@ -3,7 +3,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import jsq.config.Config;
-import jsq.datastructes.datacontainer;
+import jsq.datastructes.Datacontainer;
 import jsq.fetch.factory.Factory;
 import jsq.fetcher.history.BaseFetcher;
 
@@ -13,7 +13,7 @@ import org.junit.Test;
 public class TestAllHistoryFetcher {
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		for (BaseFetcher x : Factory.getHistoryFetcher()) {
 			System.out.println("Checking: " + x.getName());
 			assertFalse(x.getName().isEmpty());
@@ -33,7 +33,7 @@ public class TestAllHistoryFetcher {
 			}
 			
 			//System.out.println(x.getResult());
-			List<datacontainer> results = x.getResult();
+			List<Datacontainer> results = x.getHistQuotes();
 			assertTrue(results.size() == 1);
 		}
 	}

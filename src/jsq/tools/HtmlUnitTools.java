@@ -30,6 +30,23 @@ public class HtmlUnitTools {
 	}
 
 	/**
+	 * Searches a Table that TextContent starts with startstring
+	 * [table.getTextContent().trim().startsWith(startstring)]
+	 * 
+	 * @param page Page
+	 * @return HTML Table or null if not found
+	 */
+	public static HtmlElement getElementByPartContent(HtmlPage page, String startstring, String tagname) {
+		List<DomElement> tablelist = page.getElementsByTagName(tagname);
+		for (DomElement table : tablelist) {
+			if (table.getTextContent().trim().startsWith(startstring)) {
+				return (HtmlElement) table;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Puts the content of a table in a list of hashmap.
 	 * One Hashmap for each row
 	 * 

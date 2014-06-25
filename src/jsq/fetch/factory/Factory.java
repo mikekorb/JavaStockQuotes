@@ -20,7 +20,7 @@ public class Factory {
 		return historylist;
 	}
 
-	public static void addJSFetcher(String string) {
+	public synchronized static void addJSFetcher(String string) throws Exception {
 		if (historylist == null) {
 			getHistoryFetcher();
 		}

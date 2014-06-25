@@ -2,7 +2,7 @@ package jsq.datastructes;
 
 import java.util.HashMap;
 
-public class datacontainer {
+public class Datacontainer {
 
 	public HashMap<String, Object> data = new HashMap<String, Object>();
 	

@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TestYahoo {
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		Yahoo x = new Yahoo();
 		x.prepare("DE0007236101", 2012, 1, 1, 2013, 1, 1);
 		while (x.hasMoreConfig()) {
@@ -23,7 +23,7 @@ public class TestYahoo {
 			}
 			x.process(config);
 		}
-		System.out.println(x.getResult());
+		System.out.println(x.getHistQuotes());
 		
 	}
 

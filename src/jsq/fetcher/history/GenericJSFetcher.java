@@ -2,8 +2,9 @@ package jsq.fetcher.history;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.script.Invocable;
@@ -11,17 +12,21 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import jsq.config.Config;
+
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 
-import jsq.config.Config;
-
 public class GenericJSFetcher extends BaseFetcher {
 
 	private Invocable inv;
+	
+	
+	private Calendar start;  
+	private Calendar stop; 
 
-	public GenericJSFetcher(String filename) {
+	public GenericJSFetcher(String filename) throws Exception {
 		try {
 			File f = new File(filename);
 			ScriptEngineManager manager = new ScriptEngineManager();  
@@ -33,42 +38,44 @@ public class GenericJSFetcher extends BaseFetcher {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
 	}
 	@Override
 	public String getName() {
-		try {
-			return (String) inv.invokeFunction("getName");
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return (String) callFunc("getName");
 	}
 
 	@Override
 	public String getURL() {
-		// TODO Auto-generated method stub
-		return null;
+		return (String) callFunc("getURL");
 	}
+
+	public String getAPIVersion() {
+		return (String) callFunc("getAPIVersion");
+	}
+	public String getVersion() {
+		return (String) callFunc("getVersion");
+	}
+
 	@Override
 	public void prepare(String search, int beginYear, int beginMon,
-			int beginDay, int stopYear, int stopMon, int stopDay) {
+			int beginDay, int stopYear, int stopMon, int stopDay) throws Exception {
 		super.prepare(search, beginYear, beginMon, beginDay, stopYear, stopMon, stopDay);
+		start = Calendar.getInstance();
+		start.setTime(getStartdate());
+		stop = Calendar.getInstance();
+		stop.setTime(getStopdate());
 		try {
 			Object x = inv.invokeFunction("prepare", this, search, beginYear, beginMon, beginDay, stopYear, stopMon, stopDay);
 			setConfig((List<Config>) x);
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
 	}
+	
+	
 	@Override
 	public void process(List<Config> options) {
 		super.process(options);
@@ -88,5 +95,19 @@ public class GenericJSFetcher extends BaseFetcher {
 		webClient.getOptions().setThrowExceptionOnScriptError(false);
 		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 		return webClient;
+	}
+	
+	public boolean within(Date d) {
+		return (d.getTime() >= getStartdate().getTime()) &&
+				(d.getTime() <= getStopdate().getTime());
+	}
+	
+	public Object callFunc(String funcname) {
+		try {
+			return inv.invokeFunction(funcname);
+		} catch (NoSuchMethodException | ScriptException e) {
+			e.printStackTrace();
+		} 
+		return null;
 	}
 }
