@@ -97,7 +97,7 @@ function process(config) {
 	var res = new ArrayList();
 	for (i = 0; i < list.size(); i++) {
 		hashmap = list.get(i);
-		if (hashmap.get("Schluss").equals("-")) {
+		if (hashmap.get("Schluss").equals("-")) { // happens for the current day
 			continue;
 		}
 		var dc = new Packages.jsq.datastructes.Datacontainer();
