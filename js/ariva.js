@@ -96,6 +96,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 
 function process(config) {
 	defaultcur = "EUR";
+	handelsplatz = "";
 	for (i = 0; i < config.size(); i++) {
 		var cfg = config.get(i);
 		for (j = 0; j < cfg.getSelected().size(); j++) {
@@ -103,16 +104,24 @@ function process(config) {
 			if (o.getObj().toString().equals("Währung")) {
 				defaultcur = o.toString(); 
 			}
+			if (o.getObj().toString().equals("Handelsplatz")) {
+				handelsplatz = o.toString(); 
+			}
+			var found = 0;
 			links = getLinksForSelection(o.getObj(), page);
 			for (j = 0; j < links.size(); j++) {
 				var link = links.get(j);
 				if (link.getTextContent().trim().equals(o.toString())) {
 					page = link.click();
+					found = 1;
 				}
+			}
+			if (found == 0) {
+				print("Warnung: Link für " + o.getObj() + " nicht gefunden!");
 			}
 		}
 	}
-
+	defaultcur = Packages.jsq.tools.CurrencyTools.correctCurrency(defaultcur);
 	page.getElementById("minTime").setText(d1 + "." + m1 + "." + y1);
 	page.getElementById("maxTime").setText(d2 + "." + m2 + "." + y2);
 
@@ -121,16 +130,17 @@ function process(config) {
 	text = submit.click();
 	evalCSV(text.getContent(), defaultcur);
 
-	extractEvents(page);
+	extractEvents(page, handelsplatz);
 	
 };
 
 
-function extractEvents(page) {
+function extractEvents(page, handelsplatz) {
 	
 	var dict = {};
 	dict["Gratisaktien"] = Packages.jsq.datastructes.Const.STOCKDIVIDEND;
 	dict["Dividende"] = Packages.jsq.datastructes.Const.CASHDIVIDEND;
+	dict["Ausschüttung"] = Packages.jsq.datastructes.Const.CASHDIVIDEND;
 	dict["Split"] = Packages.jsq.datastructes.Const.STOCKSPLIT;
 	dict["Bezugsrecht"] = Packages.jsq.datastructes.Const.SUBSCRIPTIONRIGHTS;
 	
@@ -139,7 +149,8 @@ function extractEvents(page) {
 //	{Datum=23.02.01, Verhältnis= , Betrag=0,82 EUR, Ereignis=Dividende}
 //	{Datum=04.01.99, Verhältnis=0,51129, Betrag=, Ereignis=Euro-Umstellung}
 //	{Datum=02.05.96, Verhältnis=1:10, Betrag=, Ereignis=Split}
-//  {Datum=29.07.91, Verhältnis=6:1, Betrag=20,45 EUR, Ereignis=Bezugsrecht} 
+//  {Datum=29.07.91, Verhältnis=6:1, Betrag=20,45 EUR, Ereignis=Bezugsrecht}
+//  {Datum=31.01.14, Verhältnis= , Betrag=3,98 EUR, Ereignis=Ausschüttung}
 	link = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "Hist. Ereignisse", "a");
 	if (link ==  null) {
 		print("Hist. Ereignisse nicht gefunden");
@@ -159,17 +170,29 @@ function extractEvents(page) {
 		
 		// filter date range
 		d = Packages.jsq.tools.VarTools.parseDate(hashmap.get("Datum"), "dd.MM.yy");
-		if (!fetcher.within(d)) {
+		if (!fetcher.within(d)) { 
 			continue;
 		}
 
 		var dc = new Packages.jsq.datastructes.Datacontainer();
+		// Teilweise unterscheiden sich die Termine nach Handelsplätzen
+		if (hashmap.get("Handelsplätze") != null && hashmap.get("Handelsplätze") != "") {
+			hp =  java.util.Arrays.asList(hashmap.get("Handelsplätze").split(", "))
+			if (!hp.contains(handelsplatz)) {
+				// Nicht unser Handelsplatz
+				continue;
+			}
+		}
 		dc.put("date", d);
 		dc.put("ratio", hashmap.get("Verhältnis"));
-		dc.put("action", dict[hashmap.get("Ereignis")]);
-		cur = "";
-		amount = "";
-		if (hashmap.get("Betrag") != "") {
+		action = dict[hashmap.get("Ereignis")];
+		if (typeof action === "undefined") {
+		    println("Undef für " + hashmap);
+		}		
+		dc.put("action", action);
+		cur = null;
+		amount = null;
+		if (hashmap.get("Betrag") != null && hashmap.get("Betrag") != "") {
 			betrag = hashmap.get("Betrag").split(" ");
 			amount = Packages.jsq.tools.VarTools.stringToBigDecimalGermanFormat(betrag[0]);
 			cur = betrag[1];
@@ -204,12 +227,12 @@ function evalCSV(content, defaultcur)  {
 function getLinksForSelection(search,  page) {
 	var ret = new ArrayList();
 	divlinks = page.getByXPath("//div[contains(@class, 'contentRight')]/div");
-	for (i = 0; i < divlinks.size(); i++) {
+	for (var i = 0; i < divlinks.size(); i++) {
 		var div = divlinks.get(i);
 		content = div.getTextContent().trim();
-		if (content.substring(0, search.length) == search) {
+		if ("" + content.substring(0, search.length) == search) {
 			links = div.getElementsByTagName("a");
-			for (j = 0; j < links.size(); j++) {
+			for (var j = 0; j < links.size(); j++) {
 				ret.add(links.get(j));
 			}
 		}
