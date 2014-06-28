@@ -65,8 +65,9 @@ public class HtmlUnitTools {
 				continue;
 			}
 			for (int i = 0; i < row.getCells().size(); i++) {
+				String d = row.getCells().get(i).getTextContent().trim();
 				hash.put(header.getCells().get(i).getTextContent().trim(), 
-						 row.getCells().get(i).getTextContent().trim());
+						 (d.equals("") ? null : d));
 			}
 			liste.add(hash);
 		}
