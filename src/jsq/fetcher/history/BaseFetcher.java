@@ -52,6 +52,7 @@ public abstract class BaseFetcher {
 		startdate = null;
 		stopdate = null;
 		resultQuotes = null;
+		resultEvents = null;
 	}
 	
 	public List<Datacontainer> getHistQuotes() {
