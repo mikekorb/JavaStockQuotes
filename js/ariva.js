@@ -44,6 +44,9 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	y = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@id='go']");
 	page = y.click();
 
+	extractBasisdata(page);
+
+	// Find "Kurs"-Link
 	a = null;
 	for (i = 0; i < page.getAnchors().size(); i++) {
 		aa = page.getAnchors().get(i);
@@ -55,7 +58,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	page = a.click();
 
 
-	// Link "Kurse"
+	// Link "Hist.Kurse"
 	a = null;
 	for (i = 0; i < page.getAnchors().size(); i++) {
 		aa = page.getAnchors().get(i);
@@ -82,6 +85,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 		}
 		cfgliste.add(cfg);
 	}
+	// Währung
 	links = getLinksForSelection("Währung", page);
 	if (links.size() > 0) {
 		var cfg = new Packages.jsq.config.Config("Währung");
@@ -131,26 +135,26 @@ function process(config) {
 	evalCSV(text.getContent(), defaultcur);
 
 	extractEvents(page, handelsplatz);
-	
+
 };
 
 
 function extractEvents(page, handelsplatz) {
-	
+
 	var dict = {};
 	dict["Gratisaktien"] = Packages.jsq.datastructes.Const.STOCKDIVIDEND;
 	dict["Dividende"] = Packages.jsq.datastructes.Const.CASHDIVIDEND;
 	dict["Ausschüttung"] = Packages.jsq.datastructes.Const.CASHDIVIDEND;
 	dict["Split"] = Packages.jsq.datastructes.Const.STOCKSPLIT;
 	dict["Bezugsrecht"] = Packages.jsq.datastructes.Const.SUBSCRIPTIONRIGHTS;
-	
- 
+
+
 //	{Datum=30.04.01, Verhältnis=2:1, Betrag=, Ereignis=Gratisaktien}
 //	{Datum=23.02.01, Verhältnis= , Betrag=0,82 EUR, Ereignis=Dividende}
 //	{Datum=04.01.99, Verhältnis=0,51129, Betrag=, Ereignis=Euro-Umstellung}
 //	{Datum=02.05.96, Verhältnis=1:10, Betrag=, Ereignis=Split}
-//  {Datum=29.07.91, Verhältnis=6:1, Betrag=20,45 EUR, Ereignis=Bezugsrecht}
-//  {Datum=31.01.14, Verhältnis= , Betrag=3,98 EUR, Ereignis=Ausschüttung}
+//	{Datum=29.07.91, Verhältnis=6:1, Betrag=20,45 EUR, Ereignis=Bezugsrecht}
+//	{Datum=31.01.14, Verhältnis= , Betrag=3,98 EUR, Ereignis=Ausschüttung}
 	link = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "Hist. Ereignisse", "a");
 	if (link ==  null) {
 		print("Hist. Ereignisse nicht gefunden");
@@ -160,14 +164,14 @@ function extractEvents(page, handelsplatz) {
 	page = link.click();
 	tab = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "Datum", "table");
 	list = Packages.jsq.tools.HtmlUnitTools.analyse(tab);
-	
+
 	var res = new ArrayList();
 	for (i = 0; i < list.size(); i++) {
 		hashmap = list.get(i);
 		if (hashmap.get("Ereignis") == "Euro-Umstellung") {
 			continue;
 		}
-		
+
 		// filter date range
 		d = Packages.jsq.tools.VarTools.parseDate(hashmap.get("Datum"), "dd.MM.yy");
 		if (!fetcher.within(d)) { 
@@ -187,7 +191,7 @@ function extractEvents(page, handelsplatz) {
 		dc.put("ratio", hashmap.get("Verhältnis"));
 		action = dict[hashmap.get("Ereignis")];
 		if (typeof action === "undefined") {
-		    println("Undef für " + hashmap);
+			println("Undef für " + hashmap);
 		}		
 		dc.put("action", action);
 		cur = null;
@@ -202,7 +206,7 @@ function extractEvents(page, handelsplatz) {
 		res.add(dc);
 	}
 	fetcher.setHistEvents(res);
-	
+
 }
 
 
@@ -238,4 +242,18 @@ function getLinksForSelection(search,  page) {
 		}
 	}
 	return ret;
+}
+
+function extractBasisdata(page) {
+	var dc = new Packages.jsq.datastructes.Datacontainer();
+	
+	wkn = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "WKN:", "div");
+	dc.put("wkn", wkn.getTextContent().split(" ")[1]);
+	
+	isin = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "ISIN:", "div");
+	dc.put("isin", isin.getTextContent().split(" ")[1]);
+
+	name = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//h1[@class='big']");
+	dc.put("name", name.getTextContent().trim());
+	fetcher.setStockDetails(dc);
 }

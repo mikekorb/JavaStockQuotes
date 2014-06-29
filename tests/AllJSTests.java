@@ -7,6 +7,7 @@ import java.util.List;
 
 import jsq.config.Config;
 import jsq.fetch.factory.Factory;
+import jsq.fetcher.history.BaseFetcher;
 import jsq.fetcher.history.GenericJSFetcher;
 import junit.framework.Assert;
 
@@ -17,7 +18,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 
 @RunWith(Parameterized.class)
-public class SimpleAllTests {
+public class AllJSTests {
 
 	/**
 	 * Liefert aus der XML-Datei alle <held>-Nodes zurück, die getestet werden sollen
@@ -42,16 +43,20 @@ public class SimpleAllTests {
 		        }
 		    }
 		}
+		for (BaseFetcher x : Factory.getHistoryFetcher()) {
+			Object[] arr = new Object[] { x };
+			params.add(arr);
+		}
 		return params;
 	}
 
-	private String x;
+	private Object x;
 
 	/**
 	 * Init
 	 * @param h Held
 	 */
-	public SimpleAllTests(String s) {
+	public AllJSTests(Object s) {
 		x = s;
 	}
 	
@@ -63,16 +68,24 @@ public class SimpleAllTests {
 	public void runit() throws Exception {
 		System.out.println("===================================================================");
 		System.out.println(x);
-		GenericJSFetcher fetcher = new GenericJSFetcher(x);
+		BaseFetcher fetcher;
+		if (x instanceof String) {
+			fetcher = new GenericJSFetcher((String) x);
+		} else {
+			fetcher = (BaseFetcher) x;
+		}
 		System.out.println("	Name: " + fetcher.getName());
 		System.out.println("	URL: " + fetcher.getURL());
-		System.out.println("	Api: " + fetcher.getAPIVersion());
-		System.out.println("	Version: " + fetcher.getVersion());
 		assertNotNull(fetcher.getName());
 		assertNotNull(fetcher.getURL());
-		assertNotNull(fetcher.getAPIVersion());
-		assertNotNull(fetcher.getVersion());
-		assertTrue(fetcher.getAPIVersion().equals("1"));
+		if (fetcher instanceof GenericJSFetcher) {
+			GenericJSFetcher f = (GenericJSFetcher) fetcher;
+			System.out.println("	Api: " + f.getAPIVersion());
+			System.out.println("	Version: " + f.getVersion());
+			assertNotNull(f.getAPIVersion());
+			assertNotNull(f.getVersion());
+			assertTrue(f.getAPIVersion().equals("1"));
+		}
 		
 		fetcher.prepare("DE0007236101", 2012, 5, 29, 2014, 6, 1); // Siemens
 		while (fetcher.hasMoreConfig()) {
@@ -86,7 +99,9 @@ public class SimpleAllTests {
 			fetcher.process(config);
 		}
 		System.out.println("	Quotes:" + fetcher.getHistQuotes());
+		System.out.println("	Details:" + fetcher.getStockDetails());
 		System.out.println("	Events:" + fetcher.getHistEvents());
+		assertNotNull(fetcher.getStockDetails());
 	}
 }
 

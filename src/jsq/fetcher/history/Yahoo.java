@@ -22,6 +22,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
@@ -37,6 +38,8 @@ public class Yahoo extends BaseFetcher  {
 			+ "&a=%2$s&b=%3$s&c=%4$s&d=%5$s&e=%6$s&f=%7$s&g=d"; 
 
 	private WebClient webClient;
+
+	private String currency;
 
 	
 	@Override
@@ -92,7 +95,7 @@ public class Yahoo extends BaseFetcher  {
 		super.process(config);
 		try {
 			String ticker = URLEncoder.encode((String) config.get(0).getSelected().get(0).getObj(), "UTF-8");
-			String currency = getCurrency(ticker);
+			getData(ticker);
 
 
 			Date start = getStartdate();
@@ -131,18 +134,21 @@ public class Yahoo extends BaseFetcher  {
 	}
 
 
-	private String getCurrency(String ticker) throws FailingHttpStatusCodeException, IOException {
-		UnexpectedPage page = webClient.getPage("http://de.finance.yahoo.com/d/quotes.csv?s=" + ticker + "&f=c4");
-		CSVFormat format = CSVFormat.RFC4180.withHeader().withDelimiter(';').withIgnoreEmptyLines(true);
-		CSVParser parser = new CSVParser(new StringReader("c4\n" + page.getWebResponse().getContentAsString()), format);
+	private void getData(String ticker) throws FailingHttpStatusCodeException, IOException {
+		UnexpectedPage page = webClient.getPage("http://de.finance.yahoo.com/d/quotes.csv?s=" + ticker + "&f=c4n0s");
+		CSVFormat format = CSVFormat.RFC4180.withHeader().withDelimiter(',').withIgnoreEmptyLines(true);
+		CSVParser parser = new CSVParser(new StringReader("c4,n0,s\n" + page.getWebResponse().getContentAsString()), format);
 		List<CSVRecord> records = parser.getRecords();
 		if (records.size() == 0) {
 			parser.close();
-			return null;
+			return;
 		}
-		String value = records.get(0).get("c4");
+		currency = records.get(0).get("c4");
+		Datacontainer dc = new Datacontainer();
+		dc.put("name", records.get(0).get("n0"));
+		dc.put("ticker", records.get(0).get("s"));
+		setStockDetails(dc);
 		parser.close();
-		return value;
 	}
 
 	

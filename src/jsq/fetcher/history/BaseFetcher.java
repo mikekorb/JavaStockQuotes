@@ -11,6 +11,16 @@ public abstract class BaseFetcher {
 
 	private List<Datacontainer> resultEvents;
 	private List<Datacontainer> resultQuotes;
+	private Datacontainer stockDetails;
+	
+	public Datacontainer getStockDetails() {
+		return stockDetails;
+	}
+
+	public void setStockDetails(Datacontainer stockDetails) {
+		this.stockDetails = stockDetails;
+	}
+
 	private List<Config> options = null;
 	protected Date startdate;
 	protected Date stopdate;
@@ -20,6 +30,7 @@ public abstract class BaseFetcher {
 	public abstract String getURL();
 	
 
+	@SuppressWarnings("deprecation")
 	public void prepare(String search, int beginYear, int beginMon, int beginDay, int stopYear, int stopMon, int stopDay) throws Exception {
 		reset();
 		startdate = new Date(beginYear-1900, beginMon - 1, beginDay);
@@ -53,6 +64,7 @@ public abstract class BaseFetcher {
 		stopdate = null;
 		resultQuotes = null;
 		resultEvents = null;
+		stockDetails = null;
 	}
 	
 	public List<Datacontainer> getHistQuotes() {
