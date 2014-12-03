@@ -50,7 +50,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	a = null;
 	for (i = 0; i < page.getAnchors().size(); i++) {
 		aa = page.getAnchors().get(i);
-		if (aa.getAttribute("href").contains("/kurs")) {
+		if (aa.getAttribute("href").contains("/kurs") || aa.getAttribute("href").contains("/quote/simple.m")) {
 			a = aa;
 			break;
 		}
@@ -62,7 +62,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	a = null;
 	for (i = 0; i < page.getAnchors().size(); i++) {
 		aa = page.getAnchors().get(i);
-		if (aa.getAttribute("href").contains("historische_kurse")) {
+		if (aa.getAttribute("href").contains("historische_kurse") || aa.getAttribute("href").contains("/quote/historic.m")) {
 			a = aa;
 			break;
 		}

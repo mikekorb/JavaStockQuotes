@@ -15,7 +15,7 @@ public class TestJS {
 		System.out.println(fetcher);
 //		fetcher.prepare("DE0007100000", 2013, 1, 15, 2013, 1, 31);
 //		fetcher.prepare("DE0007236101", 2013, 1, 15, 2013, 1, 31); // Siemens
-		fetcher.prepare("DE0007236101", 1995, 1, 1, 2014, 6, 25); // Siemens
+		fetcher.prepare("LU0119124781", 1995, 1, 1, 2014, 6, 25); // Siemens
 		//LU0274211217 db x-tr.EO STOXX 50
 		//fetcher.prepare("LU0274211217", 1995, 1, 1, 2014, 6, 25); // Fond
 		while (fetcher.hasMoreConfig()) {
