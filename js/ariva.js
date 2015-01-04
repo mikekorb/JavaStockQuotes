@@ -253,7 +253,8 @@ function extractBasisdata(page) {
 	isin = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "ISIN:", "div");
 	dc.put("isin", isin.getTextContent().split(" ")[1]);
 
-	name = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//h1[@class='big']");
+	name = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//h1");
 	dc.put("name", name.getTextContent().trim());
 	fetcher.setStockDetails(dc);
 }
+
