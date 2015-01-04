@@ -26,4 +26,9 @@ public class Factory {
 		}
 		historylist.add(new GenericJSFetcher(string));
 	}
+	
+	public synchronized static void addJavaFetcher(BaseFetcher n) {
+		List<BaseFetcher> liste = getHistoryFetcher();
+		liste.add(n);
+	}
 }
