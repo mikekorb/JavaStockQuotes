@@ -41,7 +41,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	input = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@id='livesearch']");
 	input.setValueAttribute(search);
 
-	y = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@id='go']");
+	y = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[contains(@class, 'go ') and @type='submit']");
 	page = y.click();
 
 	extractBasisdata(page);

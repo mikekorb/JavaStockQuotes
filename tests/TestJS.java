@@ -14,8 +14,11 @@ public class TestJS {
 		GenericJSFetcher fetcher = new GenericJSFetcher("js/ariva.js");
 		System.out.println(fetcher);
 //		fetcher.prepare("DE0007100000", 2013, 1, 15, 2013, 1, 31);
-//		fetcher.prepare("DE0007236101", 2013, 1, 15, 2013, 1, 31); // Siemens
-		fetcher.prepare("LU0119124781", 1995, 1, 1, 2014, 6, 25); // Siemens
+//		fetcher.prepare("DE0007236101", 2013, 1, 15, 2013, 1, 31); 
+		//fetcher.prepare("LU0119124781", 1995, 1, 1, 2014, 6, 25);
+//		fetcher.prepare("LU0635178014", 1995, 1, 1, 2014, 6, 25); /
+		fetcher.prepare("603474", 1995, 1, 1, 2014, 6, 25); 
+		
 		//LU0274211217 db x-tr.EO STOXX 50
 		//fetcher.prepare("LU0274211217", 1995, 1, 1, 2014, 6, 25); // Fond
 		while (fetcher.hasMoreConfig()) {
@@ -28,8 +31,11 @@ public class TestJS {
 			}
 			fetcher.process(config);
 		}
+		System.out.println("Quotes:");
 		System.out.println(fetcher.getHistQuotes());
+		System.out.println("HistEvents:");
 		System.out.println(fetcher.getHistEvents());
+		System.out.println("StockDetials");
 		System.out.println(fetcher.getStockDetails());
 	}
 

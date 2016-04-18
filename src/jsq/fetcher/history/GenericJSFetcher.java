@@ -110,4 +110,12 @@ public class GenericJSFetcher extends BaseFetcher {
 		} 
 		return null;
 	}
+	public void search(String string) {
+		try {
+			inv.invokeFunction("search", this, string);
+		} catch (NoSuchMethodException | ScriptException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

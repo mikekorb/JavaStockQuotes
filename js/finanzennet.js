@@ -121,3 +121,11 @@ function getElementByStartText(elements, search) {
 	}
 	return null;
 }
+
+function search(fetch, search) {
+	fetcher = fetch;
+	
+	wc = fetcher.getWebClient(true);
+	page = wc.getPage("http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld="+search);
+	
+}
