@@ -73,7 +73,7 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 	page.getElementById("clean_payout").setChecked(false);
 	page.getElementById("clean_bezug").setChecked(false);
 
-	page = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='Anwenden']").click();
+	//page = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='Anwenden']").click();
 
 	//Handelsplatz
 	var cfgliste = new ArrayList();
