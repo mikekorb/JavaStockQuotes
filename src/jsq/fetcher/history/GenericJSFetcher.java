@@ -13,6 +13,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jsq.config.Config;
+import jsq.fetch.factory.Factory;
 
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
@@ -89,6 +90,9 @@ public class GenericJSFetcher extends BaseFetcher {
 
 	public WebClient getWebClient(boolean useJavaScript) {
 		WebClient webClient = new WebClient();
+		if (Factory.getProxyConfig() != null) {
+			webClient.getOptions().setProxyConfig(Factory.getProxyConfig());
+		}
 		webClient.setCssErrorHandler(new SilentCssErrorHandler());
 		webClient.setRefreshHandler(new ThreadedRefreshHandler());
 		webClient.getOptions().setJavaScriptEnabled(useJavaScript);

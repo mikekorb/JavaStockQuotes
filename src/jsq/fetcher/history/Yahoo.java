@@ -14,6 +14,7 @@ import java.util.Map;
 
 import jsq.config.Config;
 import jsq.datastructes.Datacontainer;
+import jsq.fetch.factory.Factory;
 import jsq.tools.HtmlUnitTools;
 import jsq.tools.VarTools;
 
@@ -62,6 +63,9 @@ public class Yahoo extends BaseFetcher  {
 	public void prepare(String search, int beginYear, int beginMon, int beginDay, int stopYear, int stopMon, int stopDay) throws Exception {
 		super.prepare(search, beginYear, beginMon, beginDay, stopYear, stopMon, stopDay);
 		webClient = new WebClient();
+		if (Factory.getProxyConfig() != null) {
+			webClient.getOptions().setProxyConfig(Factory.getProxyConfig());
+		}
 		webClient.setCssErrorHandler(new SilentCssErrorHandler());
 		webClient.setRefreshHandler(new ThreadedRefreshHandler());
 		webClient.getOptions().setJavaScriptEnabled(false); 
