@@ -30,6 +30,8 @@ function getURL() {
 	return "http://www.ariva.de";
 };
 
+
+
 function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon, stopday) {
 	fetcher = fetch;
 	y1 = startyear; m1 = startmon; d1 = startday;
@@ -77,20 +79,23 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 
 	//Handelsplatz
 	var cfgliste = new ArrayList();
-	links = getLinksForSelection("Handelsplatz", page);
-	if (links.size() > 0) {
+	options = getLinksForSelection("handelsplatz", page);
+	if (options.size() > 0) {
 		var cfg = new Packages.jsq.config.Config("Handelsplatz");
-		for (i = 0; i < links.size(); i++) {
-			cfg.addAuswahl(links.get(i).getTextContent().trim(), new String("Handelsplatz"));
+		for (i = 0; i < options.size(); i++) {
+			cfg.addAuswahl(options.get(i), new String("handelsplatz"));
 		}
 		cfgliste.add(cfg);
 	}
 	// Währung
-	links = getLinksForSelection("Währung", page);
-	if (links.size() > 0) {
+	options = getLinksForSelection("waehrung", page);
+	if (options.size() > 0) {
 		var cfg = new Packages.jsq.config.Config("Währung");
-		for (i = 0; i < links.size(); i++) {
-			cfg.addAuswahl(links.get(i).getTextContent().trim(), new String("Währung"));
+		for (i = 0; i < options.size(); i++) {
+			if (options.get(i).contains("wählen")) {
+				continue;
+			}
+			cfg.addAuswahl(options.get(i), new String("waehrung"));
 		}
 		cfgliste.add(cfg);
 	}
@@ -99,24 +104,28 @@ function prepare(fetch, search, startyear, startmon, startday, stopyear, stopmon
 };
 
 function process(config) {
+	print("Processing");
 	defaultcur = "EUR";
 	handelsplatz = "";
 	for (i = 0; i < config.size(); i++) {
 		var cfg = config.get(i);
 		for (j = 0; j < cfg.getSelected().size(); j++) {
 			var o = cfg.getSelected().get(j);
-			if (o.getObj().toString().equals("Währung")) {
+			if (o.getObj().toString().equals("waehrung")) {
 				defaultcur = o.toString(); 
 			}
-			if (o.getObj().toString().equals("Handelsplatz")) {
+			if (o.getObj().toString().equals("handelsplatz")) {
 				handelsplatz = o.toString(); 
 			}
 			var found = 0;
-			links = getLinksForSelection(o.getObj(), page);
-			for (j = 0; j < links.size(); j++) {
-				var link = links.get(j);
-				if (link.getTextContent().trim().equals(o.toString())) {
-					page = link.click();
+			
+			select = getSelect(o.getObj(), page);
+			optionslist = select.getOptions(); 
+			for (var k = 0; k < optionslist.size(); k++) {
+				var option = optionslist.get(k);
+				if (option.getText().trim().equals(o.toString())) {
+					print("Selecting " + option.getText());
+					option.setSelected(true);
 					found = 1;
 				}
 			}
@@ -129,6 +138,8 @@ function process(config) {
 	page.getElementById("minTime").setText(d1 + "." + m1 + "." + y1);
 	page.getElementById("maxTime").setText(d2 + "." + m2 + "." + y2);
 
+	submit = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='OK']");
+	page = submit.click();
 
 	submit = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='Download']");
 	text = submit.click();
@@ -228,17 +239,19 @@ function evalCSV(content, defaultcur)  {
 	fetcher.setHistQuotes(res);
 }
 
+function getSelect(search,  page) {
+	return page.getFirstByXPath("//select[contains(@class, '"  + search + "')]");
+}
+
 function getLinksForSelection(search,  page) {
 	var ret = new ArrayList();
-	divlinks = page.getByXPath("//div[contains(@class, 'contentRight')]/div");
-	for (var i = 0; i < divlinks.size(); i++) {
-		var div = divlinks.get(i);
-		content = div.getTextContent().trim();
-		if ("" + content.substring(0, search.length) == search) {
-			links = div.getElementsByTagName("a");
-			for (var j = 0; j < links.size(); j++) {
-				ret.add(links.get(j));
-			}
+	select = getSelect(search, page);
+	if (select) {
+		optionslist = select.getOptions(); 
+		for (var i = 0; i < optionslist.size(); i++) {
+			var div = optionslist.get(i);
+			content = div.getText().trim();
+			ret.add(content);
 		}
 	}
 	return ret;
