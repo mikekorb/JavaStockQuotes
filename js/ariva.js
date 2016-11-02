@@ -19,7 +19,7 @@ function getAPIVersion() {
 };
 
 function getVersion() {
-	return "2014-06-25";
+	return "2016-11-02";
 };
 
 function getName() {
