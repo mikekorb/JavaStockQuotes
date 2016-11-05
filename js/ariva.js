@@ -19,7 +19,7 @@ function getAPIVersion() {
 };
 
 function getVersion() {
-	return "2016-11-02";
+	return "2016-11-05";
 };
 
 function getName() {
@@ -138,8 +138,8 @@ function process(config) {
 	page.getElementById("minTime").setText(d1 + "." + m1 + "." + y1);
 	page.getElementById("maxTime").setText(d2 + "." + m2 + "." + y2);
 
-	submit = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='OK']");
-	page = submit.click();
+//	submit = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='OK']");
+//	page = submit.click();
 
 	submit = Packages.jsq.tools.HtmlUnitTools.getFirstElementByXpath(page, "//input[@class='submitButton' and @value='Download']");
 	text = submit.click();
@@ -166,7 +166,7 @@ function extractEvents(page, handelsplatz) {
 //	{Datum=02.05.96, Verhältnis=1:10, Betrag=, Ereignis=Split}
 //	{Datum=29.07.91, Verhältnis=6:1, Betrag=20,45 EUR, Ereignis=Bezugsrecht}
 //	{Datum=31.01.14, Verhältnis= , Betrag=3,98 EUR, Ereignis=Ausschüttung}
-	link = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "Hist. Ereignisse", "a");
+	link = Packages.jsq.tools.HtmlUnitTools.getElementByPartContent(page, "Historische Ereignisse", "a");
 	if (link ==  null) {
 		print("Hist. Ereignisse nicht gefunden");
 		return;
